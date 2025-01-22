@@ -21,7 +21,7 @@ help: ## List of all commands
 ## Docker commands
 ## ----------------------
 up: ## Up
-	${DOCKER_COMPOSE} up --build -d
+	${DOCKER_COMPOSE} up -d
 
 down: ## Stop and remove
 	${DOCKER_COMPOSE} down
@@ -30,3 +30,6 @@ restart: down up ## Restart
 
 build: ## Build docker
 	${DOCKER_COMPOSE} build
+
+db-inspect: ## Inspect DB server
+	${DOCKER} inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb-develop
