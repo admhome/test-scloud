@@ -4,6 +4,7 @@ namespace src;
 
 use ReflectionMethod;
 use src\Http\Request;
+use src\Template\Processor;
 
 class App
 {
@@ -34,11 +35,14 @@ class App
         $controllerName = '\src\Controller\\'.$request->getController();
         $actionName = $request->getAction();
 
+        // template processor
+        $tpl = new Processor();
+
         if (!class_exists($controllerName)) {
             throw new \Exception('Controller '.$request->getController().' not found');
         }
 
-        $controller = new $controllerName();
+        $controller = new $controllerName($this->connection, $tpl);
 
         if (!method_exists($controller, $actionName)) {
             throw new \Exception('Action '.$request->getAction().' not found');

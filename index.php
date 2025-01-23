@@ -10,5 +10,3 @@ spl_autoload_register(function($className) {
 
 $app = new src\App();
 $app->run();
-
-phpinfo();

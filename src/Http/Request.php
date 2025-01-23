@@ -22,7 +22,12 @@ class Request
             $parsedUrl = explode('/', $parsedUrl);
             // Warning! Deprecated as of PHP 8.1.0, use htmlspecialchars() instead.
             $this->routeData['controller'] = ucfirst(strtolower(htmlspecialchars($parsedUrl[0])));
-            $this->routeData['action'] = strtolower(htmlspecialchars($parsedUrl[1]));
+
+            if (empty($parsedUrl[1])) {
+                $this->routeData['action']= 'index';
+            } else {
+                $this->routeData['action'] = strtolower(htmlspecialchars($parsedUrl[1]));
+            }
 
             if (!empty($_GET) && !empty($_GET['id']) && is_numeric($_GET['id'])) {
                 $this->routeData['id'] = abs(intval($_GET['id']));
