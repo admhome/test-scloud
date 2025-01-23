@@ -8,6 +8,7 @@ class News
 {
     protected $pdo;
     protected $tpl;
+    protected $worker;
 
     public function __construct(
         \PDO $pdo,
@@ -16,20 +17,21 @@ class News
         $this->pdo = $pdo;
         $this->tpl = $tpl;
 
+        $this->worker = new \src\StorageWorker\News($this->pdo);
+
         echo '[ ] '.__CLASS__.' was created';
     }
 
     public function index()
     {
-        $worker = new \src\StorageWorker\News($this->pdo);
-        $news = $worker->getPage(0);
+        $news = $this->worker->getPage(0);
 
         $parseData = [
             'title' => 'Новости',
             'content' => [],
             'pages' => [
                 'current' => 0,
-                'total' => $worker->getCount(),
+                'total' => $this->worker->getCount(),
             ],
         ];
 
@@ -58,8 +60,25 @@ class News
     public function view($id)
     {
         $id = $this->getId($id);
+        $newsItem = $this->worker->findById($id);
 
-        echo '<pre>' . __METHOD__ . ' was called with id: ' . var_export($id, true) . '!</pre>';
+        if (empty($newsItem)) {
+            throw new \Exception('News not found');
+        }
+
+        $parseData = [
+            'title' => $newsItem->getName(),
+            'content' => [
+                'news' => [
+                    [
+                        'FULL_TEXT' => nl2br($newsItem->getFullText()),
+                    ]
+                ],
+            ],
+            'pages' => [],
+        ];
+
+        return $this->tpl->render('news_view', $parseData);
     }
 
     public function update($id)
