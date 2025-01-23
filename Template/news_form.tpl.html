@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <form action="/news/update" method="post">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label required">Название</label>
+                        <div>
+                            <input type="text" name="name" class="form-control" value="{NAME}" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Анонс</label>
+                        <textarea class="form-control" name="short_text" rows="4" placeholder="">{SHORT_TEXT}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Полный текст</label>
+                        <textarea class="form-control" name="full_text" rows="6" placeholder="">{FULL_TEXT}</textarea>
+                    </div>
+
+                    <input type="hidden" name="id" value="{ID}">
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

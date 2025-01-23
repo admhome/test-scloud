@@ -20,7 +20,7 @@ class Processor
         $content = '';
 
         // локальный шаблон
-        if (!empty($data['content']) || !empty($data['templateVars'])) {
+        if (!empty($template)) {
             $engine = new Engine($this->engineConfig);
 
             if (!empty($data['content'])) {

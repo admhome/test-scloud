@@ -69,23 +69,72 @@ class News
         return $this->tpl->render('news_view', $parseData);
     }
 
-    public function create()
+    public function create(): void
     {
-        echo '<pre>' . __METHOD__ . ' was called!</pre>';
+        $this->tpl->render('news_form', [
+            'title' => 'Создать новость',
+            'templateVars' => [
+                'ID' => '',
+                'NAME' => '',
+                'SHORT_TEXT' => '',
+                'FULL_TEXT' => '',
+            ],
+        ]);
     }
 
-    public function edit($id)
+    public function edit($id): void
     {
         $id = $this->getId($id);
+        $newsItem = $this->worker->findById($id);
 
-        echo '<pre>' . __METHOD__ . ' was called with id: ' . $id . '!</pre>';
+        if (empty($newsItem)) {
+            throw new \Exception('News not found');
+        }
+
+        $this->tpl->render('news_form', [
+            'title' => 'Редактировать новость',
+            'templateVars' => [
+                'ID' => $newsItem->getId(),
+                'NAME' => $newsItem->getName(),
+                'SHORT_TEXT' => $newsItem->getShortText(),
+                'FULL_TEXT' => $newsItem->getFullText(),
+            ],
+        ]);
     }
 
-    public function update($id)
+    public function update()
     {
-        $id = $this->getId($id);
+        if (empty($_POST)) {
+            throw new \Exception('No needed data!');
+        }
 
-        echo '<pre>' . __METHOD__ . ' was called with id: ' . $id . '!</pre>';
+        $sql = '';
+
+        if (!empty($_POST['id'])) {
+            $sql = 'UPDATE news SET `name` = :name, `short_text` = :short_text, `full_text` = :full_text WHERE `id` = :id';
+        } else {
+            $sql = 'INSERT INTO news (`name`, `short_text`, `full_text`) VALUES (:name, :short_text, :full_text)';
+        }
+
+        $query = $this->pdo->prepare($sql);
+        $query->bindValue(':name', $_POST['name'], \PDO::PARAM_STR);
+        $query->bindValue(':short_text', $_POST['short_text'], \PDO::PARAM_STR);
+        $query->bindValue(':full_text', $_POST['full_text'], \PDO::PARAM_STR);
+
+        if (!empty($_POST['id'])) {
+            $query->bindValue(':id', $_POST['id'], \PDO::PARAM_INT);
+            $id = abs(intval($_POST['id']));
+        }
+
+        $query->execute();
+
+        if (empty($_POST['id'])) {
+            $id = $this->pdo->lastInsertId();
+        }
+
+        header('Location: /news/view?id=' . $id);
+
+        return false;
     }
 
     public function delete($id)
