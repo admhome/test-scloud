@@ -16,7 +16,7 @@ class Request
         $parsedUrl = substr($parsedUrl, 1);
 
         if (empty($parsedUrl)) {
-            $this->routeData['controller'] = 'index';
+            $this->routeData['controller'] = 'Index';
             $this->routeData['action'] = 'index';
         } else {
             $parsedUrl = explode('/', $parsedUrl);
