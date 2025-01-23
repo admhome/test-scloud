@@ -22,15 +22,14 @@ class News
 
     public function index()
     {
-        $news = $this->worker->getPage(0);
+        $page = $_GET['page'] ?? 0;
+        $page = abs(intval($page));
+        $news = $this->worker->getPage($page);
+        $allPages = $this->worker->getCountPages();
 
         $parseData = [
             'title' => 'Новости',
             'content' => [],
-            'pages' => [
-                'current' => 0,
-                'total' => $this->worker->getCount(),
-            ],
         ];
 
         if ($news) {
@@ -41,6 +40,16 @@ class News
                     'SHORT_TEXT' => $vv['short_text'],
                 ];
             }
+        }
+
+        for ($i = 0; $i < $allPages; $i++) {
+            $parseData['content']['pages'][] = [
+                'IND' => $i,
+                'PAGE' => $i + 1,
+                'STATUS' => $page == $i
+                    ? 'active'
+                    : '',
+            ];
         }
 
         return $this->tpl->render('news_index', $parseData);
@@ -141,7 +150,14 @@ class News
     {
         $id = $this->getId($id);
 
-        echo '<pre>' . __METHOD__ . ' was called with id: ' . $id . '!</pre>';
+        $sql = 'UPDATE news SET is_deleted = 1 WHERE id = :id';
+        $query = $this->pdo->prepare($sql);
+        $query->bindValue(':id', $id, \PDO::PARAM_INT);
+        $query->execute();
+
+        header('Location: /news');
+
+        return false;
     }
 
     protected function getId($id)

@@ -6,7 +6,7 @@ use src\Model\News as NewsModel;
 
 class News
 {
-    protected const PER_PAGE = 5;
+    protected const PER_PAGE = 4;
 
     protected $connection;
 
@@ -90,10 +90,11 @@ class News
 
     public function getPage(int $page = 0): array
     {
-        $sql = 'SELECT * FROM news WHERE is_deleted = 0 ORDER BY id DESC LIMIT :page, :perPage';
+        $sql = 'SELECT * FROM news WHERE is_deleted = 0 ORDER BY id DESC LIMIT :perPage OFFSET :offset';
+
         $query = $this->connection->prepare($sql);
-        $query->bindValue(':page', $page, \PDO::PARAM_INT);
         $query->bindValue(':perPage', self::PER_PAGE, \PDO::PARAM_INT);
+        $query->bindValue(':offset', $page * self::PER_PAGE, \PDO::PARAM_INT);
         $query->execute();
 
         $news = [];
@@ -106,14 +107,15 @@ class News
         return $news;
     }
 
-    public function getCount(): int
+    public function getCountPages(): int
     {
         $sql = 'SELECT COUNT(*) as \'items_count\' FROM news WHERE is_deleted = 0';
         $query = $this->connection->prepare($sql);
         $query->execute();
 
-        $count = $query->fetchColumn();
+        $itemsCount = $query->fetchColumn();
+        $count = intval(ceil($itemsCount / self::PER_PAGE));
 
-        return 0 ?? $count;
+        return $count ?? 0;
     }
 }
