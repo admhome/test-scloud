@@ -1,15 +1,20 @@
-<!-- BLOCK news -->
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <p class="text-secondary">{news.FULL_TEXT}</p>
+                <p class="text-secondary">{FULL_TEXT}</p>
             </div>
-            <!-- Card footer -->
             <div class="card-footer">
-                <a href="/news/">Все новости</a>
+                <ul class="list-inline list-inline-dots mb-0">
+                    <li class="list-inline-item">
+                        <a class="link-secondary" href="/news/edit?id={ID}">Редактировать</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a class="link-secondary" href="/news/">Все новости</a>
+                    </li>
+                </ul>
+
             </div>
         </div>
     </div>
 </div>
-<!-- ENDBLOCK -->
